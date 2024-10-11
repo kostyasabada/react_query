@@ -1,3 +1,4 @@
+import Projects from "./components/Projects"
 import Todos from "./components/Todo"
 
 function App() {
@@ -12,7 +13,12 @@ function App() {
   //   });
   // })
 
-  return <Todos />
+  return (
+    <>
+    {/* <Todos /> */}
+    <Projects />
+    </>
+  )
 }
 
 export default App
