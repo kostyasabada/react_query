@@ -1,4 +1,4 @@
-import Todo from "./components/Todo"
+import Todos from "./components/Todo"
 
 function App() {
 
@@ -12,7 +12,7 @@ function App() {
   //   });
   // })
 
-  return <Todo />
+  return <Todos />
 }
 
 export default App

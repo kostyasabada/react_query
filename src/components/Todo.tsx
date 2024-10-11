@@ -1,10 +1,29 @@
 import { useIsFetching } from "@tanstack/react-query";
 import { useTodos, useTodosIds } from "../services/queries"
+import { useCreateTodo, useUpdateTodo } from "../services/mutation";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Todo } from "../types/todo";
 
-export default function Todo() {
+export default function Todos() {
   const todosIdsQuery = useTodosIds();
 
   const todosQueries = useTodos(todosIdsQuery.data);
+
+  const createTodoMutation = useCreateTodo();
+  const updateTodoMutation = useUpdateTodo();
+
+  const { register, handleSubmit } = useForm<Todo>();
+
+  const handleCreateTodoSubmit: SubmitHandler<Todo> = (data) => {
+    //function mutateFn from mutation
+    createTodoMutation.mutate(data)
+  }
+
+  const handleMarkAsDoneSubmit = (data: Todo | undefined) => {
+    if (data) {
+      updateTodoMutation.mutate({ ...data, checked: true })
+    }
+  }
 
 
   // const isFetching = useIsFetching();
@@ -26,12 +45,29 @@ export default function Todo() {
       {/* {todosIdsQuery.data?.map((id) => (
         <p key={id}>{id}</p>
       ))} */}
+
+      <form onSubmit={handleSubmit(handleCreateTodoSubmit)}>
+        <h4>New Todo</h4>
+        <input type="text" placeholder="Title" {...register('title')} />
+        <br />
+        <input type="text" placeholder="Description" {...register('description')} />
+        <br />
+        <input
+          type="submit"
+          disabled={createTodoMutation.isPending}
+          value={createTodoMutation.isPending ? 'Creating...' : 'Create todo'} />
+      </form>
       <ul>
         {todosQueries.map(({ data }) => (
           <li key={data?.id}>
-              <div>Id: {data?.id}</div>
-              <span>Title: {data?.title}</span>
-              <span>Description: {data?.description}</span>
+            <div>Id: {data?.id}</div>
+            <span>Title: {data?.title}</span>
+            <span>Description: {data?.description}</span>
+            <div>
+              <button onClick={() => handleMarkAsDoneSubmit(data)} disabled={data?.checked}>
+                {data?.checked ? 'Done' : 'Mark as done'}
+              </button>
+            </div>
           </li>
         ))}
       </ul>
